@@ -55,7 +55,25 @@ Paste a sample of your app's CLI or Streamlit output here so a reader can see wh
 ```
 
 ## 🧪 Testing PawPal+
-
+python -m pytest
+-test_owner_and_pet_relationships
+    -checks if owner can stor preferences,add pet and link the pet.
+-test_task_priority_and_feasibility
+    -verfies priority scoring and whether a task fits given time
+-test_daily_plan_generation_selects_tasks_within_time
+    -makes sure plan selects high priority that is within the owners time frame
+-test_explain_plan_returns_reasoning_strings
+    -plan explanation includes the sleected task by name
+-test_filter_tasks_by_completion_status
+    -does filering tasks go into completed or incompleted correctly
+- test_filter_tasks_by_pet_name
+    -checks if filter task by specific name
+-test_scheduler_detects_same_pet_time_conflicts
+    - makes sure one warning is made for identical times
+-test_scheduler_detects_different_pet_time_conflicts
+    -makes sure one warning is made for different times
+-test_mark_complete_creates_next_daily_and_weekly_occurrences
+    -verifies recurring tasks
 ```bash
 # Run the full test suite:
 pytest
@@ -68,7 +86,13 @@ Sample test output:
 
 ```
 # Paste your pytest output here
-```
+```plugins: anyio-4.13.0
+collected 11 items                                                                                                 
+
+tests\test_pawpal.py ..                                                                                      [ 18%]
+tests\test_pawpal_system.py .........                                                                        [100%]
+
+=============================================== 11 passed in 0.14s ================================================
 
 ## 📐 Smarter Scheduling
 

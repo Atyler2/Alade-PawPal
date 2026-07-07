@@ -4,13 +4,11 @@
 
 **a. Initial design**
 - Users should be able to add pets, schedule tasks and keep track of the tasks they completed
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+-Design includes an Owner class that stores the data of the user, this class uses the Pet class which stores the data of the Owner's pets. The CareTask class can be assigned to a pet storing information about the tasks for this pet. Finally, the DailyPlan class uses both the Owner and pet classes to schedule the CareTasks. 
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+- Changes include Owner having a list of pets and Pet having a list of tasks with DailyPlan building a plan from those objects.
 
 ---
 

@@ -73,6 +73,15 @@ Sample test output:
 ## 📐 Smarter Scheduling
 
 > Fill in once you've implemented scheduling logic.
+- Scheduler
+    - orders tasks by peferred times
+    -missing times goes last
+-Filtering
+    -keeps completed or incomplete task
+-conflict detections
+    -returns warning strings for time matches
+-recurring tasks
+    -auto creates the next occurence
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|

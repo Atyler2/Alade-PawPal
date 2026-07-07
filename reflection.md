@@ -21,8 +21,7 @@
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+- The scheduler is lightweight but it only detects exact time conflicts,which makes it easy to use and fast but can miss real problems with overlapping duration. 
 
 ---
 

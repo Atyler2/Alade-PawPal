@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date, timedelta
 from typing import List, Optional
 
 
@@ -81,7 +82,9 @@ class Task:
     priority: str = "medium"
     category: str = "general"
     is_recurring: bool = False
+    recurrence: Optional[str] = None
     preferred_time: Optional[str] = None
+    due_date: Optional[date] = None
     pet: Optional["Pet"] = None
     is_complete: bool = False
 
@@ -94,9 +97,44 @@ class Task:
         """Return whether the task fits within the available time."""
         return self.duration_minutes <= max(0, available_minutes)
 
-    def mark_complete(self) -> None:
-        """Mark the task as completed."""
+    def schedule_key(self) -> Optional[tuple[str, Optional[date]]]:
+        """Return a lightweight key for task conflict detection.
+
+        The key is based on the task's preferred start time and due date.
+        Tasks without a preferred time are excluded from same-time conflict checks.
+        """
+        if not self.preferred_time:
+            return None
+        return (self.preferred_time.strip(), self.due_date)
+
+    def mark_complete(self) -> Optional["Task"]:
+        """Mark the task as completed and reschedule recurring tasks."""
         self.is_complete = True
+
+        recurrence_type = (self.recurrence or "").strip().lower()
+        if self.is_recurring and recurrence_type in {"daily", "weekly"}:
+            delta = timedelta(
+                days=1) if recurrence_type == "daily" else timedelta(weeks=1)
+            next_due_date = date.today() + delta
+
+            next_task = Task(
+                title=self.title,
+                duration_minutes=self.duration_minutes,
+                priority=self.priority,
+                category=self.category,
+                is_recurring=self.is_recurring,
+                recurrence=self.recurrence,
+                preferred_time=self.preferred_time,
+                due_date=next_due_date,
+                pet=self.pet,
+            )
+
+            if self.pet is not None:
+                self.pet.add_task(next_task)
+
+            return next_task
+
+        return None
 
 
 @dataclass
@@ -125,6 +163,36 @@ class DailyPlan:
             key=lambda task: (-task.get_priority_score(),
                               task.duration_minutes, task.title.lower()),
         )
+
+    def sort_by_time(self) -> None:
+        """Sort tasks by their preferred time string in HH:MM format."""
+        self.tasks.sort(
+            key=lambda task: tuple(
+                map(int, task.preferred_time.split(":"))
+            ) if task.preferred_time else (99, 99),
+        )
+
+    def filter_tasks(
+        self,
+        is_complete: Optional[bool] = None,
+        pet_name: Optional[str] = None,
+    ) -> List[Task]:
+        """Return tasks matching completion status and/or pet name."""
+        filtered_tasks = self.tasks
+
+        if is_complete is not None:
+            filtered_tasks = [
+                task for task in filtered_tasks if task.is_complete == is_complete
+            ]
+
+        if pet_name is not None:
+            normalized_name = pet_name.strip().lower()
+            filtered_tasks = [
+                task for task in filtered_tasks
+                if task.pet is not None and task.pet.name.lower() == normalized_name
+            ]
+
+        return filtered_tasks
 
     def generate_plan(self) -> List[Task]:
         """Create a feasible schedule within the owner's available time."""
@@ -162,3 +230,50 @@ class DailyPlan:
                 f"that fits within the remaining time."
             )
         return explanations
+
+
+@dataclass
+class Scheduler(DailyPlan):
+    """Lightweight scheduler that can detect overlapping task times."""
+
+    def detect_time_conflicts(self) -> List[str]:
+        """Detect tasks that share the same scheduled time and return warnings.
+
+        This performs a lightweight check by grouping active tasks with the
+        same `preferred_time` and `due_date`. It does not attempt full interval
+        overlap detection, but it does flag exact same-time collisions.
+        """
+        schedule_map: dict[tuple[str, Optional[date]], List[Task]] = {}
+
+        for task in self.tasks:
+            if task.is_complete:
+                continue
+            key = task.schedule_key()
+            if key is None:
+                continue
+            schedule_map.setdefault(key, []).append(task)
+
+        warnings: List[str] = []
+        for (time_string, due_date), tasks in schedule_map.items():
+            if len(tasks) < 2:
+                continue
+
+            date_info = f" on {due_date.isoformat()}" if due_date else ""
+            task_list = ", ".join(
+                f"'{task.title}' ({task.pet.name if task.pet else 'Unknown'})"
+                for task in tasks
+            )
+            warnings.append(
+                f"Warning: tasks scheduled at the same time{date_info}: {task_list}."
+            )
+
+        return warnings
+
+    def warn_conflicts(self) -> str:
+        """Return a human-readable summary of detected scheduling conflicts.
+
+        If no conflicts are found, this returns a benign confirmation message.
+        This keeps scheduling checks safe for terminal output or UI display.
+        """
+        warnings = self.detect_time_conflicts()
+        return "\n".join(warnings) if warnings else "No scheduling conflicts detected."

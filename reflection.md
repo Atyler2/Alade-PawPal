@@ -3,8 +3,9 @@
 ## 1. System Design
 
 **a. Initial design**
+
 - Users should be able to add pets, schedule tasks and keep track of the tasks they completed
--Design includes an Owner class that stores the data of the user, this class uses the Pet class which stores the data of the Owner's pets. The CareTask class can be assigned to a pet storing information about the tasks for this pet. Finally, the DailyPlan class uses both the Owner and pet classes to schedule the CareTasks. 
+  -Design includes an Owner class that stores the data of the user, this class uses the Pet class which stores the data of the Owner's pets. The CareTask class can be assigned to a pet storing information about the tasks for this pet. Finally, the DailyPlan class uses both the Owner and pet classes to schedule the CareTasks.
 
 **b. Design changes**
 
@@ -21,7 +22,7 @@
 
 **b. Tradeoffs**
 
-- The scheduler is lightweight but it only detects exact time conflicts,which makes it easy to use and fast but can miss real problems with overlapping duration. 
+- The scheduler is lightweight but it only detects exact time conflicts,which makes it easy to use and fast but can miss real problems with overlapping duration.
 
 ---
 
@@ -29,13 +30,11 @@
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+- - I used the VScode Copilot to help me build the framework and give me certain instructions but to also review my code and provide me with an alternate perspective. The most useful prompts that I used were more focused on explaining different chunks of code or ways to implement ideas.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+- Alot of the ideas the AI suggested were alternate to or completely against the instructions, some were interesting but didn't implement the idea of the app in the way I invisioned. This mainly occurred with the first diagram for the skeleton of the class structure,where the entire program was dependent on the DailyPlan class.
 
 ---
 
@@ -43,13 +42,12 @@
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
 
+I tested the core scheduling behaviors, including owner-pet relationships, task priority and feasibility along with filetering, plan generation and more. These tests were important becuase they verified that the scheduler makes sense and handles edge cases.
 **b. Confidence**
 confidence level: 4
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+
+- I am considerable confident that this program works although next time I would like to continue to use the AI to explain the different pieces of code it generates but also spend more time verfiying the code created.
 
 ---
 
@@ -57,12 +55,12 @@ confidence level: 4
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+-I am most satisfied with the structure of the objects and how they work together.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+- In another iteration I would improve readability by alot. 
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+- One important thing that I learned about is the importance of having comprehensive tests. 

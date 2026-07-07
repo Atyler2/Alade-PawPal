@@ -1,5 +1,5 @@
 import streamlit as st
-from pawpal_system import DailyPlan, Owner, Pet, Task
+from pawpal_system import Owner, Pet, Scheduler, Task
 
 st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
 
@@ -67,16 +67,22 @@ with col2:
 with col3:
     priority = st.selectbox("Priority", ["low", "medium", "high"], index=2)
 
+preferred_time = st.text_input("Preferred time (HH:MM)", value="09:00")
+
 if st.button("Add task"):
-    task = Task(title=task_title, duration_minutes=int(
-        duration), priority=priority)
+    task = Task(
+        title=task_title,
+        duration_minutes=int(duration),
+        priority=priority,
+        preferred_time=preferred_time or None,
+    )
     pet.add_task(task)
     st.session_state.pet = pet
     st.session_state.plan = None
     st.success(f"Added {task.title} to {pet.name}'s care plan.")
 
 if pet.tasks:
-    st.write("Current tasks:")
+    st.subheader("Current tasks")
     task_rows = [
         {
             "title": task.title,
@@ -94,16 +100,36 @@ st.divider()
 
 st.subheader("Build Schedule")
 if st.button("Generate schedule"):
-    plan = DailyPlan(owner=owner, pet=pet)
+    plan = Scheduler(owner=owner, pet=pet)
     for task in pet.tasks:
         plan.add_task(task)
+
+    conflict_message = plan.warn_conflicts()
+    if conflict_message != "No scheduling conflicts detected.":
+        st.warning(conflict_message)
+    else:
+        st.success(conflict_message)
+
+    plan.sort_by_time()
+    st.subheader("Tasks ordered by preferred time")
+    st.table(
+        [
+            {
+                "title": task.title,
+                "preferred_time": task.preferred_time,
+                "duration_minutes": task.duration_minutes,
+                "priority": task.priority,
+            }
+            for task in plan.tasks
+        ]
+    )
 
     scheduled_tasks = plan.generate_plan()
     st.session_state.plan = plan
 
     if scheduled_tasks:
         st.success("Plan generated!")
-        st.write("Scheduled tasks:")
+        st.subheader("Scheduled tasks")
         st.table(
             [
                 {
@@ -115,7 +141,7 @@ if st.button("Generate schedule"):
             ]
         )
 
-        st.write("Why this plan:")
+        st.subheader("Why this plan")
         for reason in plan.explain_plan():
             st.write(f"- {reason}")
     else:

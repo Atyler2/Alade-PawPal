@@ -55,25 +55,27 @@ Paste a sample of your app's CLI or Streamlit output here so a reader can see wh
 ```
 
 ## 🧪 Testing PawPal+
+
 python -m pytest
 -test_owner_and_pet_relationships
-    -checks if owner can stor preferences,add pet and link the pet.
+-checks if owner can stor preferences,add pet and link the pet.
 -test_task_priority_and_feasibility
-    -verfies priority scoring and whether a task fits given time
+-verfies priority scoring and whether a task fits given time
 -test_daily_plan_generation_selects_tasks_within_time
-    -makes sure plan selects high priority that is within the owners time frame
+-makes sure plan selects high priority that is within the owners time frame
 -test_explain_plan_returns_reasoning_strings
-    -plan explanation includes the sleected task by name
+-plan explanation includes the sleected task by name
 -test_filter_tasks_by_completion_status
-    -does filering tasks go into completed or incompleted correctly
+-does filering tasks go into completed or incompleted correctly
+
 - test_filter_tasks_by_pet_name
-    -checks if filter task by specific name
--test_scheduler_detects_same_pet_time_conflicts
-    - makes sure one warning is made for identical times
--test_scheduler_detects_different_pet_time_conflicts
-    -makes sure one warning is made for different times
--test_mark_complete_creates_next_daily_and_weekly_occurrences
-    -verifies recurring tasks
+  -checks if filter task by specific name
+  -test_scheduler_detects_same_pet_time_conflicts - makes sure one warning is made for identical times
+  -test_scheduler_detects_different_pet_time_conflicts
+  -makes sure one warning is made for different times
+  -test_mark_complete_creates_next_daily_and_weekly_occurrences
+  -verifies recurring tasks
+
 ```bash
 # Run the full test suite:
 pytest
@@ -84,10 +86,10 @@ pytest --cov
 
 Sample test output:
 
-```
+````
 # Paste your pytest output here
 ```plugins: anyio-4.13.0
-collected 11 items                                                                                                 
+collected 11 items
 
 tests\test_pawpal.py ..                                                                                      [ 18%]
 tests\test_pawpal_system.py .........                                                                        [100%]
@@ -96,32 +98,69 @@ tests\test_pawpal_system.py .........                                           
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
-- Scheduler
-    - orders tasks by peferred times
-    -missing times goes last
--Filtering
-    -keeps completed or incomplete task
--conflict detections
-    -returns warning strings for time matches
--recurring tasks
-    -auto creates the next occurence
+### Features
+- Sorting by time: tasks can be ordered by `preferred_time` in `HH:MM` format.
+- Filtering tasks: tasks can be filtered by completion status or by pet name.
+- Conflict warnings: the scheduler returns warnings when multiple tasks share the same scheduled time.
+- Daily recurrence: recurring tasks can auto-create the next occurrence for daily or weekly schedules.
+- Priority-based planning: the plan selects tasks that fit within the owner’s available time and priority constraints.
 
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+## Demo Walkthrough
 
-## 📸 Demo Walkthrough
+### Main UI features
+- Enter owner and pet details, including available daily time.
+- Add tasks with a title, duration, priority, and preferred time.
+- Generate a schedule and view the planned tasks in a clear table.
+- See conflict warnings when multiple tasks are assigned the same time.
+- Review sorted tasks, completed/incomplete tasks, and pet-specific task views.
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+### Example workflow
+1. Add a pet and set the owner’s available time.
+2. Add one or more care tasks such as walks, feeding, or grooming.
+3. Generate the schedule to see which tasks fit the day.
+4. Review the time-sorted task list and any conflict warnings.
+5. Mark a task complete and see how recurring tasks are handled.
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+### Key Scheduler behaviors shown
+- Sorting by time: tasks are displayed in chronological order using `preferred_time`.
+- Conflict warnings: overlapping same-time tasks raise a warning message.
+- Filtering: tasks can be filtered by completion status or by pet name.
+- Recurring tasks: completing a daily or weekly task creates the next occurrence automatically.
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+### Sample CLI output from `main.py`
+```text
+Tasks in the plan before sorting:
+- Play (Tala, 09:00, medium)
+- Wash (Tala, 09:00, medium)
+- Walk (Tala, 07:15, high)
+- Brush Luna (Luna, 10:00, low)
+
+Tasks sorted by priority:
+- Walk (07:15, high)
+- Play (09:00, medium)
+- Wash (09:00, medium)
+- Brush Luna (10:00, low)
+
+Tasks sorted by preferred time:
+- Walk (07:15, high)
+- Play (09:00, medium)
+- Wash (09:00, medium)
+- Brush Luna (10:00, low)
+
+Conflict check:
+Warning: tasks scheduled at the same time: 'Play' (Tala), 'Wash' (Tala).
+
+Completed tasks:
+- Wash
+
+Incomplete tasks:
+- Walk
+- Play
+- Brush Luna
+
+Tasks filtered by pet name 'Tala':
+- Walk (Tala)
+- Play (Tala)
+- Wash (Tala)
+```
+````

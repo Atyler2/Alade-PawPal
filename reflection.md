@@ -3,7 +3,7 @@
 ## 1. System Design
 
 **a. Initial design**
-
+- Users should be able to add pets, schedule tasks and keep track of the tasks they completed
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 

@@ -1,0 +1,41 @@
+classDiagram
+    class Owner {
+        +String name
+        +String availability
+        +String preferences
+        +get_available_time()
+        +set_preference()
+    }
+
+    class Pet {
+        +String name
+        +String species
+        +String needs
+        +get_care_needs()
+        +update_profile()
+    }
+
+    class CareTask {
+        +String title
+        +int duration_minutes
+        +String priority
+        +String category
+        +Boolean is_recurring
+        +get_priority_score()
+        +is_feasible()
+    }
+
+    class DailyPlan {
+        +Owner owner
+        +Pet pet
+        +List~CareTask~ tasks
+        +generate_plan()
+        +explain_plan()
+        +sort_tasks()
+    }
+
+    Owner "1" --> "1..*" Pet : owns
+    Pet "1" --> "0..*" CareTask : requires
+    DailyPlan --> Owner : uses
+    DailyPlan --> Pet : uses
+    DailyPlan --> CareTask : schedules
